@@ -19,7 +19,7 @@ const Flashcard = ({ question, isFavorite, onToggleFavorite }) => {
         className="w-full h-full relative preserve-3d transition-transform duration-500"
         animate={{ rotateY: isFlipped ? 180 : 0 }}>
         {/* Front Face (Question) */}
-        <div className="absolute w-full h-full backface-hidden bg-white rounded-3xl shadow-xl border-2 border-primary-100 p-6 flex flex-col items-center justify-center text-center">
+        <div className="absolute w-full h-full backface-hidden bg-white rounded-3xl shadow-xl border-[3px] border-gray-200 p-6 flex flex-col items-center justify-center text-center">
           
           {/* Top Elements */}
           <span className="absolute top-6 left-6 text-base font-bold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full uppercase tracking-wider">
@@ -51,7 +51,7 @@ const Flashcard = ({ question, isFavorite, onToggleFavorite }) => {
         </div>
 
         {/* Back Face (Answer) */}
-        <div className="absolute w-full h-full backface-hidden bg-primary-600 rounded-3xl shadow-xl p-8 flex flex-col items-center justify-center text-center rotate-y-180 text-white">
+        <div className="absolute w-full h-full backface-hidden bg-primary-600 rounded-3xl shadow-xl border-[3px] border-primary-500 p-8 flex flex-col items-center justify-center text-center rotate-y-180 text-white">
           <span className="absolute top-7 left-1/2 -translate-x-1/2 text-3xl font-black text-primary-200 tracking-tighter select-none opacity-50">
             A {question.id}
           </span>
