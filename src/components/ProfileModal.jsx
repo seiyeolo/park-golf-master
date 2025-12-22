@@ -1,20 +1,43 @@
 import { useState, useEffect } from 'react';
-import { X, User, UserPlus } from 'lucide-react';
+import { X, User, UserPlus, Target, Calendar } from 'lucide-react';
 
-const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser }) => {
+// 시험 연도 자동 계산 (매년 5월 시험 기준)
+const getExamYear = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  return month > 5 ? year + 1 : year;
+};
+
+const getDefaultExamDate = () => {
+  const year = getExamYear();
+  return `${year}-05-15`;
+};
+
+const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser, existingProfile }) => {
   const [name, setName] = useState('');
+  const [objective, setObjective] = useState('');
+  const [examDate, setExamDate] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      setName(currentUser || '');
+      if (existingProfile) {
+        setName(existingProfile.name || currentUser || '');
+        setObjective(existingProfile.objective || `${getExamYear()}년 파크골프 지도사 합격`);
+        setExamDate(existingProfile.examDate || getDefaultExamDate());
+      } else {
+        setName(currentUser || '');
+        setObjective(`${getExamYear()}년 파크골프 지도사 합격`);
+        setExamDate(getDefaultExamDate());
+      }
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, currentUser]);
+  }, [isOpen, currentUser, existingProfile]);
 
   if (!isOpen) return null;
 
@@ -22,7 +45,11 @@ const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser }
     e.preventDefault();
     const trimmedName = name.trim();
     if (trimmedName) {
-      onSaveProfile(trimmedName);
+      onSaveProfile({
+        name: trimmedName,
+        objective: objective.trim() || `${getExamYear()}년 파크골프 지도사 합격`,
+        examDate: examDate || getDefaultExamDate()
+      });
       onClose();
     }
   };
@@ -36,7 +63,7 @@ const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser }
           <div className="flex items-center gap-2">
             {isNewUser ? <UserPlus className="w-6 h-6" /> : <User className="w-6 h-6" />}
             <h2 className="text-xl font-bold">
-              {isNewUser ? '환영합니다!' : '사용자 전환'}
+              {isNewUser ? '환영합니다!' : existingProfile ? '프로필 수정' : '사용자 전환'}
             </h2>
           </div>
           {!isNewUser && (
@@ -50,16 +77,18 @@ const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser }
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="p-6">
-          <p className="text-gray-600 mb-4 text-center">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <p className="text-gray-600 text-center text-sm">
             {isNewUser
-              ? '학습을 시작하기 전에 이름을 입력해주세요.'
-              : '새로운 사용자 이름을 입력해주세요.'}
+              ? '학습을 시작하기 전에 정보를 입력해주세요.'
+              : '프로필 정보를 수정할 수 있습니다.'}
           </p>
 
-          <div className="mb-6">
-            <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-2">
-              이름
+          {/* 이름 입력 */}
+          <div>
+            <label htmlFor="userName" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+              <User className="w-4 h-4" />
+              이름 <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -67,22 +96,54 @@ const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser }
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="예: 홍길동"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition-colors text-lg"
+              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition-colors"
               autoFocus
               maxLength={20}
+            />
+          </div>
+
+          {/* 목표 입력 */}
+          <div>
+            <label htmlFor="objective" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+              <Target className="w-4 h-4" />
+              학습 목표
+            </label>
+            <input
+              type="text"
+              id="objective"
+              value={objective}
+              onChange={(e) => setObjective(e.target.value)}
+              placeholder={`${getExamYear()}년 파크골프 지도사 합격`}
+              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition-colors"
+              maxLength={50}
+            />
+          </div>
+
+          {/* 시험 예정일 */}
+          <div>
+            <label htmlFor="examDate" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+              <Calendar className="w-4 h-4" />
+              시험 예정일
+            </label>
+            <input
+              type="date"
+              id="examDate"
+              value={examDate}
+              onChange={(e) => setExamDate(e.target.value)}
+              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={!name.trim()}
-            className="w-full py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-colors"
+            className="w-full py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-colors mt-2"
           >
-            {isNewUser ? '학습 시작하기' : '사용자 전환'}
+            {isNewUser ? '🏆 학습 시작하기' : '저장하기'}
           </button>
 
-          {!isNewUser && (
-            <p className="text-xs text-gray-400 text-center mt-4">
+          {!isNewUser && !existingProfile && (
+            <p className="text-xs text-gray-400 text-center">
               새 이름 입력 시 해당 사용자의 학습 기록이 적용됩니다.
             </p>
           )}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, BarChart3, CheckCircle, XCircle, BookOpen, RotateCcw, User, Trash2, UserCog } from 'lucide-react';
+import { X, BarChart3, CheckCircle, XCircle, BookOpen, RotateCcw, User, Trash2, UserCog, Target, Clock, Edit3 } from 'lucide-react';
 
 const StatsModal = ({
   isOpen,
@@ -9,15 +9,17 @@ const StatsModal = ({
   knownQuestions,
   unknownQuestions,
   onStartUnknownReview,
-  currentUser,
+  profile,
   onSwitchUser,
+  onEditProfile,
   onResetProgress
 }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  // Prevent body scroll when modal is open
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      setShowResetConfirm(false);
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -27,6 +29,22 @@ const StatsModal = ({
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  // D-day 계산 (타임존 버그 수정: YYYY-MM-DD를 로컬 시간으로 파싱)
+  const calculateDday = () => {
+    if (!profile?.examDate) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // YYYY-MM-DD 형식을 로컬 타임존으로 파싱
+    const [year, month, day] = profile.examDate.split('-').map(Number);
+    const exam = new Date(year, month - 1, day);
+    const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
+    return diff;
+  };
+
+  const dday = calculateDday();
+  const isUrgent = dday !== null && dday <= 7 && dday > 0;
+  const isPast = dday !== null && dday < 0;
 
   // 전체 학습 통계 계산
   const totalQuestions = questions.length;
@@ -46,7 +64,6 @@ const StatsModal = ({
     const categoryUnknown = categoryQuestions.filter(q => unknownQuestions.has(q.id)).length;
     const categoryStudied = categoryKnown + categoryUnknown;
     const categoryTotal = categoryQuestions.length;
-    const percent = categoryTotal > 0 ? Math.round((categoryStudied / categoryTotal) * 100) : 0;
 
     return {
       ...cat,
@@ -54,22 +71,20 @@ const StatsModal = ({
       studied: categoryStudied,
       known: categoryKnown,
       unknown: categoryUnknown,
-      percent
     };
   });
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center sm:p-4 animate-in fade-in duration-200">
-      {/* Click outside to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative w-full max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-5 duration-300">
 
         {/* Header */}
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white z-10">
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white z-10">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary-600" />
-            <h2 className="text-xl font-bold text-gray-900">학습 통계</h2>
+            <h2 className="text-lg font-bold text-gray-900">학습 통계</h2>
           </div>
           <button
             onClick={onClose}
@@ -80,7 +95,42 @@ const StatsModal = ({
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto p-4 custom-scrollbar bg-gray-50/50 space-y-4">
+        <div className="overflow-y-auto p-4 custom-scrollbar bg-gray-50/50 space-y-3">
+
+          {/* OKR 정보 카드 */}
+          {profile && (
+            <div className="bg-gradient-to-br from-primary-500 to-emerald-500 rounded-xl p-4 text-white shadow-lg">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  <span className="font-bold">{profile.name}님의 학습 현황</span>
+                </div>
+                <button
+                  onClick={onEditProfile}
+                  className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                  title="프로필 수정"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* 목표 */}
+              <div className="flex items-center gap-2 mb-2 text-white/90">
+                <Target className="w-4 h-4" />
+                <span className="text-sm">🎯 {profile.objective}</span>
+              </div>
+
+              {/* D-day */}
+              {dday !== null && (
+                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-bold ${
+                  isPast ? 'bg-white/20' : isUrgent ? 'bg-red-500' : 'bg-white/20'
+                }`}>
+                  <Clock className="w-4 h-4" />
+                  ⏰ {isPast ? '시험 완료' : dday === 0 ? 'D-Day!' : `D-${dday}`}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* 전체 진행률 */}
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
@@ -93,9 +143,9 @@ const StatsModal = ({
                 <span className="text-gray-600">총 {totalQuestions}문제 중 {studiedCount}문제 학습</span>
                 <span className="font-bold text-primary-600">{studiedPercent}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                 <div
-                  className="bg-primary-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-primary-400 to-emerald-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${studiedPercent}%` }}
                 />
               </div>
@@ -107,7 +157,6 @@ const StatsModal = ({
             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <h3 className="font-bold text-gray-800 mb-3">자기평가 결과</h3>
               <div className="space-y-3">
-                {/* 알았어요 */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
@@ -124,7 +173,6 @@ const StatsModal = ({
                   </div>
                 </div>
 
-                {/* 몰랐어요 */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
@@ -155,7 +203,7 @@ const StatsModal = ({
                     <span className="text-xs text-gray-500">
                       <span className="font-bold text-primary-600">{cat.studied}</span>/{cat.total}
                       {cat.unknown > 0 && (
-                        <span className="ml-1 text-orange-500">({cat.unknown}개 복습필요)</span>
+                        <span className="ml-1 text-orange-500">({cat.unknown}개 복습)</span>
                       )}
                     </span>
                   </div>
@@ -181,7 +229,7 @@ const StatsModal = ({
                 onStartUnknownReview();
                 onClose();
               }}
-              className="w-full flex items-center justify-center gap-2 p-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold shadow-lg active:scale-[0.98] transition-all"
+              className="w-full flex items-center justify-center gap-2 p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold shadow-lg active:scale-[0.98] transition-all"
             >
               <RotateCcw className="w-5 h-5" />
               몰랐던 문제 {unknownCount}개 복습하기
@@ -190,56 +238,50 @@ const StatsModal = ({
 
           {/* 학습 시작 안내 */}
           {studiedCount === 0 && (
-            <div className="text-center py-6 text-gray-400">
-              <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>아직 학습 기록이 없습니다.</p>
-              <p className="text-sm mt-1">문제를 풀고 자기평가를 해보세요!</p>
+            <div className="text-center py-4 text-gray-400">
+              <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">아직 학습 기록이 없습니다.</p>
+              <p className="text-xs mt-1">문제를 풀고 자기평가를 해보세요!</p>
             </div>
           )}
 
-          {/* 사용자 및 초기화 섹션 */}
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 space-y-3">
-            {/* 현재 사용자 표시 */}
-            {currentUser && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <User className="w-5 h-5 text-gray-500" />
-                  <span className="text-gray-700 font-medium">{currentUser}</span>
-                </div>
-                <button
-                  onClick={onSwitchUser}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                >
-                  <UserCog className="w-4 h-4" />
-                  사용자 전환
-                </button>
-              </div>
-            )}
+          {/* 사용자 관리 섹션 */}
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 space-y-2">
+            <h3 className="font-bold text-gray-800 mb-2 text-sm">사용자 관리</h3>
+
+            {/* 다른 사용자로 전환 */}
+            <button
+              onClick={onSwitchUser}
+              className="w-full flex items-center justify-center gap-2 p-2.5 text-primary-600 hover:bg-primary-50 rounded-xl font-medium transition-colors border border-primary-200 text-sm"
+            >
+              <UserCog className="w-4 h-4" />
+              다른 사용자로 전환
+            </button>
 
             {/* 학습 기록 초기화 버튼 */}
             {studiedCount > 0 && !showResetConfirm && (
               <button
                 onClick={() => setShowResetConfirm(true)}
-                className="w-full flex items-center justify-center gap-2 p-3 text-red-500 hover:bg-red-50 rounded-xl font-medium transition-colors border border-red-200"
+                className="w-full flex items-center justify-center gap-2 p-2.5 text-red-500 hover:bg-red-50 rounded-xl font-medium transition-colors border border-red-200 text-sm"
               >
                 <Trash2 className="w-4 h-4" />
-                학습 기록 초기화
+                처음부터 다시 학습하기
               </button>
             )}
 
             {/* 초기화 확인 */}
             {showResetConfirm && (
-              <div className="bg-red-50 rounded-xl p-4 border border-red-200">
-                <p className="text-red-700 font-medium text-center mb-3">
-                  정말 초기화하시겠습니까?
+              <div className="bg-red-50 rounded-xl p-3 border border-red-200">
+                <p className="text-red-700 font-medium text-center text-sm mb-2">
+                  모든 학습 기록이 초기화됩니다.
                 </p>
-                <p className="text-red-500 text-sm text-center mb-4">
-                  모든 학습 기록이 삭제됩니다.
+                <p className="text-red-500 text-xs text-center mb-3">
+                  (프로필 정보는 유지됩니다)
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowResetConfirm(false)}
-                    className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors"
+                    className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors text-sm"
                   >
                     취소
                   </button>
@@ -249,7 +291,7 @@ const StatsModal = ({
                       setShowResetConfirm(false);
                       onClose();
                     }}
-                    className="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors text-sm"
                   >
                     초기화
                   </button>

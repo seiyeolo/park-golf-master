@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Lock, Unlock, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Lock, Unlock } from 'lucide-react';
 
 const AuthModal = ({ isOpen, onClose, onAuthenticate }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const inputRef = useRef(null);
 
-  // Hardcoded password for now - User can change this later
-  // Let's use 'parkgolf' as default for now
-  const CORRECT_PASSWORD = 'parkgolf'; 
+  // 환경 변수에서 인증 코드 가져오기
+  const CORRECT_PASSWORD = import.meta.env.VITE_AUTH_CODE || ''; 
 
   useEffect(() => {
     if (isOpen && inputRef.current) {

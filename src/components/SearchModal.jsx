@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, X, ChevronRight } from 'lucide-react';
 
 const SearchModal = ({ isOpen, onClose, questions, onSelectQuestion }) => {
@@ -12,13 +12,24 @@ const SearchModal = ({ isOpen, onClose, questions, onSelectQuestion }) => {
     }
   }, [isOpen]);
 
+  // ESC 키로 닫기
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setResults([]);
       return;
     }
 
-    const filtered = questions.filter(q => 
+    const filtered = questions.filter(q =>
       q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.id.toString().includes(searchTerm)
@@ -29,8 +40,14 @@ const SearchModal = ({ isOpen, onClose, questions, onSelectQuestion }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center pt-10 px-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center pt-10 px-4 animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Search Header */}
         <div className="p-4 border-b border-gray-100 flex items-center gap-3">

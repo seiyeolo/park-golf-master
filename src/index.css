@@ -28,4 +28,9 @@
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
+
+  /* Safe Area for iOS */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
 }
