@@ -26,7 +26,7 @@ const AdBanner = ({ type = 'book' }) => {
   if (type === 'sponsor') {
     return (
       <a
-        href="https://smartstore.naver.com/3puttkiller/products/12286351110"
+        href="https://smartstore.naver.com/3puttkiller"
         target="_blank"
         rel="noopener noreferrer"
         className="w-full max-w-md block"
