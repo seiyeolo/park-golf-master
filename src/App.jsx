@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { BookOpen, Search, Layers, BarChart3 } from 'lucide-react';
 import KMYLogo from './components/KMYLogo';
+import AdBanner from './components/AdBanner';
 import Flashcard from './components/Flashcard';
 import Controls from './components/Controls';
 import SearchModal from './components/SearchModal';
@@ -439,6 +440,12 @@ const App = () => {
         isFirst={currentIndex === 0}
         isLast={currentIndex === filteredQuestions.length - 1}
       />
+
+      {/* Ad Banners */}
+      <div className="w-full max-w-md mt-6 space-y-3">
+        <AdBanner type="book" />
+        <AdBanner type="sponsor" />
+      </div>
 
       <SearchModal
         isOpen={isSearchOpen}
