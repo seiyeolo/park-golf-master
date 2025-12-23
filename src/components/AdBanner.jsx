@@ -4,7 +4,7 @@ const AdBanner = ({ type = 'book' }) => {
   if (type === 'book') {
     return (
       <a
-        href="https://example.com/parkgolf-book"
+        href="https://www.xn--2e0br5lxwk4rnnmg.com/"
         target="_blank"
         rel="noopener noreferrer"
         className="w-full max-w-md block"
@@ -26,7 +26,7 @@ const AdBanner = ({ type = 'book' }) => {
   if (type === 'sponsor') {
     return (
       <a
-        href="https://puttist.com"
+        href="https://smartstore.naver.com/3puttkiller/products/12286351110"
         target="_blank"
         rel="noopener noreferrer"
         className="w-full max-w-md block"
