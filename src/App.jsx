@@ -191,14 +191,11 @@ const App = () => {
     let availableQuestions = filteredQuestions;
 
     if (!isAuthenticated) {
-      if (selectedCategory) {
-         availableQuestions = filteredQuestions.filter(q => {
-           const globalIndex = questions.findIndex(gq => gq.id === q.id);
-           return globalIndex < FREE_LIMIT;
-         });
-      } else {
-         availableQuestions = filteredQuestions.filter((_, idx) => idx < FREE_LIMIT);
-      }
+      // 미인증 시: 전역 인덱스 기준 FREE_LIMIT 이하만 랜덤 대상
+      availableQuestions = filteredQuestions.filter(q => {
+        const globalIndex = questions.findIndex(gq => gq.id === q.id);
+        return globalIndex < FREE_LIMIT;
+      });
 
       if (availableQuestions.length === 0) {
         setIsAuthModalOpen(true);
@@ -449,13 +446,19 @@ const App = () => {
         onClose={() => setIsSearchOpen(false)}
         questions={questions}
         onSelectQuestion={(id) => {
+          // 항상 인증 체크를 먼저 수행
+          const globalIdx = questions.findIndex(q => q.id === id);
+          if (!isAuthenticated && globalIdx >= FREE_LIMIT) {
+            setIsAuthModalOpen(true);
+            return;
+          }
+
           const filteredIdx = filteredQuestions.findIndex(q => q.id === id);
           if (filteredIdx !== -1) {
             handleSelectQuestion(id);
           } else {
             setSelectedCategory(null);
             setTimeout(() => {
-                const globalIdx = questions.findIndex(q => q.id === id);
                 if (globalIdx !== -1) setCurrentIndex(globalIdx);
             }, 0);
           }
