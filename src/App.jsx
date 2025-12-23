@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { BookOpen, Trophy, Search, Layers, BarChart3 } from 'lucide-react';
+import { BookOpen, Search, Layers, BarChart3 } from 'lucide-react';
+import KMYLogo from './components/KMYLogo';
 import Flashcard from './components/Flashcard';
 import Controls from './components/Controls';
 import SearchModal from './components/SearchModal';
@@ -351,12 +352,10 @@ const App = () => {
       {/* Header */}
       <header className="w-full max-w-md flex items-center justify-between mb-4 gap-2">
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <div className="bg-primary-600 p-2 rounded-xl shadow-lg shrink-0">
-            <Trophy className="w-5 h-5 text-white" />
-          </div>
+          <KMYLogo className="w-10 h-10 shrink-0" />
           <div className="min-w-0">
             <div className="flex items-center gap-1 mb-0.5">
-              <span className="text-[10px] text-primary-600 font-bold whitespace-nowrap">스포츠지도사</span>
+              <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap">건강증진교육개발KMY협회</span>
               {selectedCategory && (
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap ${
                   selectedCategory === 'unknown'
