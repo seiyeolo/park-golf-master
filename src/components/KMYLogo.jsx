@@ -5,20 +5,30 @@ const KMYLogo = ({ className = "w-8 h-8" }) => {
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* 배경 사각형 (라운드) */}
-      <rect x="2" y="2" width="96" height="96" rx="12" fill="#2d2d2d" />
+      {/* 배경 원 (흰색) */}
+      <circle cx="50" cy="50" r="48" fill="white" />
 
-      {/* KMY 추상 로고 - 기하학적 삼각형 패턴 */}
-      <g fill="white">
-        {/* K - 왼쪽 삼각형 */}
-        <polygon points="18,22 18,78 42,50" />
+      {/* 테두리 원 (네이비) - 3/4 원호 */}
+      <path
+        d="M 50 2 A 48 48 0 1 1 2 50"
+        fill="none"
+        stroke="#3b4b8c"
+        strokeWidth="2"
+      />
 
-        {/* M - 중앙 아래 삼각형 */}
-        <polygon points="44,78 54,42 64,78" />
+      {/* KMY 로고 - 파란색 다이아몬드/삼각형 패턴 */}
+      <g fill="#4a5ba8">
+        {/* 왼쪽 삼각형 (K) - 왼쪽을 향한 화살표 */}
+        <path d="M 18 50 L 32 36 L 32 64 Z" />
 
-        {/* Y - 오른쪽 위 삼각형 + 아래 막대 */}
-        <polygon points="58,22 82,22 70,42" />
-        <rect x="64" y="44" width="12" height="34" />
+        {/* 중앙 상단 다이아몬드 */}
+        <rect x="36" y="28" width="18" height="18" rx="3" transform="rotate(45 45 37)" />
+
+        {/* 중앙 하단 다이아몬드 */}
+        <rect x="36" y="50" width="18" height="18" rx="3" transform="rotate(45 45 59)" />
+
+        {/* 오른쪽 다이아몬드 */}
+        <rect x="54" y="39" width="18" height="18" rx="3" transform="rotate(45 63 48)" />
       </g>
     </svg>
   );
