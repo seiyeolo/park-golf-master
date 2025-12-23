@@ -6,8 +6,8 @@ const AuthModal = ({ isOpen, onClose, onAuthenticate }) => {
   const [error, setError] = useState(false);
   const inputRef = useRef(null);
 
-  // 환경 변수에서 인증 코드 가져오기
-  const CORRECT_PASSWORD = import.meta.env.VITE_AUTH_CODE || ''; 
+  // 인증 코드 (환경 변수 또는 기본값)
+  const CORRECT_PASSWORD = import.meta.env.VITE_AUTH_CODE || 'parkgolf'; 
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
