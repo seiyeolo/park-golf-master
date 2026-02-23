@@ -1,4 +1,4 @@
-import { BookOpen, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 const AdBanner = ({ type = 'book' }) => {
   if (type === 'book') {
@@ -9,15 +9,26 @@ const AdBanner = ({ type = 'book' }) => {
         rel="noopener noreferrer"
         className="w-full max-w-md block"
       >
-        <div className="bg-gradient-to-r from-emerald-600 to-green-500 rounded-xl p-3 shadow-lg flex items-center gap-3 hover:shadow-xl transition-shadow">
-          <div className="bg-white/20 p-2 rounded-lg">
-            <BookOpen className="w-6 h-6 text-white" />
+        <div className="relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow group">
+          {/* 책 표지 이미지 */}
+          <img
+            src="/images/book-cover.jpg"
+            alt="파크골프 한권으로 마스터 - 국가자격스포츠지도사"
+            className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            style={{ maxHeight: '220px', objectPosition: 'top' }}
+          />
+          {/* 오버레이 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+          {/* 하단 텍스트 */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center justify-between">
+            <div>
+              <p className="text-white font-bold text-sm drop-shadow">지금 구매하기</p>
+              <p className="text-white/80 text-xs drop-shadow">northkms.com</p>
+            </div>
+            <div className="bg-emerald-500 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+              구매 <ExternalLink className="w-3 h-3" />
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-bold text-sm">파크골프 완벽 가이드</p>
-            <p className="text-white/80 text-xs">스포츠지도사 필독서 | 지금 구매하기</p>
-          </div>
-          <ExternalLink className="w-4 h-4 text-white/70 shrink-0" />
         </div>
       </a>
     );
@@ -34,7 +45,6 @@ const AdBanner = ({ type = 'book' }) => {
         <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-3 shadow-lg flex items-center gap-3 hover:shadow-xl transition-shadow">
           <div className="bg-white rounded-lg p-1.5">
             <svg viewBox="0 0 40 40" className="w-7 h-7">
-              {/* PUTTIST 로고 - 골프공 모양 */}
               <circle cx="20" cy="20" r="18" fill="#10b981" />
               <circle cx="14" cy="14" r="2" fill="white" opacity="0.6" />
               <circle cx="20" cy="12" r="2" fill="white" opacity="0.6" />
