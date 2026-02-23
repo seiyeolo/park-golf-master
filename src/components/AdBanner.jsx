@@ -14,8 +14,7 @@ const AdBanner = ({ type = 'book' }) => {
           <img
             src="/images/book-cover.jpg"
             alt="파크골프 한권으로 마스터 - 국가자격스포츠지도사"
-            className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            style={{ maxHeight: '220px', objectPosition: 'top' }}
+            className="w-full transition-transform duration-300 group-hover:scale-105"
           />
           {/* 오버레이 */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
