@@ -48,7 +48,7 @@ const App = () => {
     return localStorage.getItem('parkgolf_auth') === 'true';
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const FREE_LIMIT = 10;
+  const FREE_LIMIT = 50;
 
   // Helper function for user-specific localStorage keys
   const getStorageKey = (key) => {

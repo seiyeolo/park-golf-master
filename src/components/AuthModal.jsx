@@ -37,9 +37,9 @@ const AuthModal = ({ isOpen, onClose, onAuthenticate }) => {
           <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-primary-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">무료 체험 종료</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">50문제 체험 완료! 🎉</h2>
           <p className="text-gray-600 leading-relaxed">
-            여기까지 잘 보셨나요? 👏<br/>
+            50문제까지 무료 체험 하셨습니다. 👏<br/>
             나머지 모든 문제를 풀려면<br/>
             <span className="font-bold text-primary-600">인증 코드</span>를 입력해주세요.
           </p>
