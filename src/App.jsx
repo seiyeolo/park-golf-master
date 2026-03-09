@@ -101,7 +101,12 @@ const App = () => {
     // Load favorites from localStorage
     const savedFavorites = localStorage.getItem(getStorageKey('favorites'));
     if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (e) {
+        console.error('favorites 데이터 손상:', e);
+        setFavorites([]);
+      }
     }
 
     // Load progress from localStorage
