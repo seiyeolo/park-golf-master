@@ -1,18 +1,8 @@
-import React, { useEffect } from 'react';
 import { Trophy, Check, X, Layers, AlertCircle } from 'lucide-react';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 
 const CategoryModal = ({ isOpen, onClose, categories, selectedCategory, onSelectCategory, unknownCount = 0 }) => {
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 

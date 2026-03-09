@@ -1,33 +1,13 @@
-import { useEffect } from 'react';
 import { Target, Clock, TrendingUp } from 'lucide-react';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
+import { calculateDday } from '../utils/date';
 
 const WelcomeModal = ({ isOpen, onClose, profile, totalQuestions, studiedCount }) => {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+  useBodyScrollLock(isOpen);
 
   if (!isOpen || !profile) return null;
 
-  // D-day 계산 (타임존 버그 수정: YYYY-MM-DD를 로컬 시간으로 파싱)
-  const calculateDday = () => {
-    if (!profile.examDate) return null;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    // YYYY-MM-DD 형식을 로컬 타임존으로 파싱
-    const [year, month, day] = profile.examDate.split('-').map(Number);
-    const exam = new Date(year, month - 1, day);
-    const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
-    return diff;
-  };
-
-  const dday = calculateDday();
+  const dday = calculateDday(profile.examDate);
   const progressPercent = totalQuestions > 0 ? Math.round((studiedCount / totalQuestions) * 100) : 0;
   const isUrgent = dday !== null && dday <= 7 && dday > 0;
   const isPast = dday !== null && dday < 0;

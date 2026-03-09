@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, User, UserPlus, Target, Calendar } from 'lucide-react';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 
 // 시험 연도 자동 계산 (매년 5월 시험 기준)
 const getExamYear = () => {
@@ -19,9 +20,10 @@ const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser, 
   const [objective, setObjective] = useState('');
   const [examDate, setExamDate] = useState('');
 
+  useBodyScrollLock(isOpen);
+
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
       if (existingProfile) {
         setName(existingProfile.name || currentUser || '');
         setObjective(existingProfile.objective || `${getExamYear()}년 파크골프 지도사 합격`);
@@ -31,12 +33,7 @@ const ProfileModal = ({ isOpen, onClose, onSaveProfile, currentUser, isNewUser, 
         setObjective(`${getExamYear()}년 파크골프 지도사 합격`);
         setExamDate(getDefaultExamDate());
       }
-    } else {
-      document.body.style.overflow = 'unset';
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen, currentUser, existingProfile]);
 
   if (!isOpen) return null;

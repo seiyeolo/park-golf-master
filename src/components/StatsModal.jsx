@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, BarChart3, CheckCircle, XCircle, BookOpen, RotateCcw, User, Trash2, UserCog, Target, Clock, Edit3 } from 'lucide-react';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
+import { calculateDday } from '../utils/date';
 
 const StatsModal = ({
   isOpen,
@@ -16,33 +18,16 @@ const StatsModal = ({
 }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
+  useBodyScrollLock(isOpen);
+
+  // 모달 열릴 때 초기화 확인 리셋
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      setShowResetConfirm(false);
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    if (isOpen) setShowResetConfirm(false);
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  // D-day 계산 (타임존 버그 수정: YYYY-MM-DD를 로컬 시간으로 파싱)
-  const calculateDday = () => {
-    if (!profile?.examDate) return null;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    // YYYY-MM-DD 형식을 로컬 타임존으로 파싱
-    const [year, month, day] = profile.examDate.split('-').map(Number);
-    const exam = new Date(year, month - 1, day);
-    const diff = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
-    return diff;
-  };
-
-  const dday = calculateDday();
+  const dday = calculateDday(profile?.examDate);
   const isUrgent = dday !== null && dday <= 7 && dday > 0;
   const isPast = dday !== null && dday < 0;
 
