@@ -12,11 +12,10 @@ import ProfileModal from './components/ProfileModal';
 import WelcomeModal from './components/WelcomeModal';
 import useAuth from './hooks/useAuth';
 import useUserData from './hooks/useUserData';
-import questionsData from './data/questions.json';
 
 const App = () => {
-  const [questions] = useState(questionsData);
-  const [filteredQuestions, setFilteredQuestions] = useState(questionsData);
+  const [questions, setQuestions] = useState([]);
+  const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
@@ -24,15 +23,23 @@ const App = () => {
   const auth = useAuth();
   const userData = useUserData();
 
+  // Lazy load questions (번들에서 분리)
+  useEffect(() => {
+    import('./data/questions.json').then(m => {
+      setQuestions(m.default);
+      setFilteredQuestions(m.default);
+    });
+  }, []);
+
   // Calculate categories
   const categories = useMemo(() => {
     const cats = {};
-    questionsData.forEach(q => {
+    questions.forEach(q => {
       if (!cats[q.category]) cats[q.category] = 0;
       cats[q.category]++;
     });
     return Object.entries(cats).map(([name, count]) => ({ id: name, name, count }));
-  }, []);
+  }, [questions]);
 
   // ID → global index Map for O(1) lookup (P1-3 성능 개선)
   const questionIndexMap = useMemo(() =>
