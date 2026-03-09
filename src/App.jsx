@@ -40,6 +40,20 @@ const App = () => {
     [questions]
   );
 
+  // Keyboard navigation (좌우 화살표)
+  useEffect(() => {
+    const anyModalOpen = isSearchOpen || isCategoryModalOpen || isStatsModalOpen ||
+      auth.isAuthModalOpen || userData.isProfileModalOpen || userData.isWelcomeModalOpen;
+
+    const handleKeyDown = (e) => {
+      if (anyModalOpen) return;
+      if (e.key === 'ArrowRight') handleNext();
+      if (e.key === 'ArrowLeft') handlePrev();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
+
   // Filter questions when category changes
   useEffect(() => {
     if (userData.selectedCategory === 'unknown') {
